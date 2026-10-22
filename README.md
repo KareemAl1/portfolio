@@ -2,7 +2,7 @@
 
 My personal site. White paper, navy ink, and motion that answers the scroll.
 
-- **Live:** kareemalwan.com (coming soon)
+- **Live:** [kareemalwan.vercel.app](https://kareemalwan.vercel.app)
 - **Stack:** React 19, TypeScript, Vite, Three.js with custom GLSL, GSAP ScrollTrigger, Lenis
 
 ## The 30-second version
