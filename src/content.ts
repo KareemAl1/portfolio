@@ -1,5 +1,3 @@
-import type { ShapeName } from './scene/shapes'
-
 export const links = {
   email: 'kareemalwan47@gmail.com',
   github: 'https://github.com/KareemAl1',
@@ -9,7 +7,7 @@ export const links = {
 export type Project = {
   id: string
   name: string
-  shape: ShapeName
+  year: string
   kind: string
   pitch: string
   body: string
@@ -25,7 +23,7 @@ export const projects: Project[] = [
   {
     id: 'handheld',
     name: 'Handheld Studio',
-    shape: 'handheld',
+    year: '2026',
     kind: '3D product configurator',
     pitch: 'A game console you can customize, take apart and actually play.',
     body:
@@ -46,7 +44,7 @@ export const projects: Project[] = [
   {
     id: 'sona',
     name: 'Sona',
-    shape: 'headphones',
+    year: '2026',
     kind: 'Ecommerce storefront',
     pitch: 'A listening room for three audio products that only exist here.',
     body:
@@ -67,7 +65,7 @@ export const projects: Project[] = [
   {
     id: 'pace',
     name: 'PACE',
-    shape: 'shoe',
+    year: '2026',
     kind: 'Scroll campaign in 3D',
     pitch: 'A running shoe launch told one scroll at a time.',
     body:
@@ -88,7 +86,7 @@ export const projects: Project[] = [
   {
     id: 'alibi',
     name: 'Alibi',
-    shape: 'alibi',
+    year: '2026',
     kind: 'Multiplayer party game',
     pitch: 'One of you is lying. The site knows who.',
     body:
@@ -100,7 +98,7 @@ export const projects: Project[] = [
     ],
     stack: ['Node.js', 'Express', 'Socket.IO', 'GSAP', 'Web Audio', 'Playwright'],
     note: 'Private repo. Happy to walk through the code on a call.',
-    images: [],
+    images: [{ src: 'work/alibi.webp', alt: 'Alibi cards: one player sees the secret word, another learns they are the imposter' }],
   },
 ]
 

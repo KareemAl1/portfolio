@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import { links, projects, roles, toolbox, type Project } from './content'
+import { links, projects, roles, toolbox } from './content'
 import { setupMotion } from './motion'
 
-function Letters({ text, className }: { text: string; className?: string }) {
+function Chars({ text }: { text: string }) {
   return (
-    <span className={className} aria-label={text}>
+    <span className="chars" aria-label={text}>
       {[...text].map((ch, i) => (
-        <span className="char" aria-hidden="true" key={i}>
-          <span className="char-inner">{ch === ' ' ? ' ' : ch}</span>
+        <span className="ch" aria-hidden="true" key={i}>
+          <span>{ch === ' ' ? ' ' : ch}</span>
         </span>
       ))}
     </span>
@@ -18,300 +18,313 @@ function Words({ text }: { text: string }) {
   return (
     <>
       {text.split(' ').map((w, i) => (
-        <span className="word" key={i}>
-          {w}{' '}
+        <span key={i}>
+          <span className="w">{w}</span>{' '}
         </span>
       ))}
     </>
   )
 }
 
-function LocalTime() {
-  const [time, setTime] = useState(() => format())
-  function format() {
-    return new Intl.DateTimeFormat('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      timeZone: 'America/Detroit',
-    }).format(new Date())
-  }
+function Clock() {
+  const fmt = () =>
+    new Intl.DateTimeFormat('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: 'America/Detroit' }).format(new Date())
+  const [t, setT] = useState(fmt)
   useEffect(() => {
-    const t = window.setInterval(() => setTime(format()), 15000)
-    return () => window.clearInterval(t)
+    const id = window.setInterval(() => setT(fmt()), 1000)
+    return () => window.clearInterval(id)
   }, [])
-  return <span>{time} in Westland, MI</span>
+  return <span className="tabular">{t} EDT</span>
 }
 
 function CopyEmail() {
   const [copied, setCopied] = useState(false)
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(links.email)
-      setCopied(true)
-      window.setTimeout(() => setCopied(false), 1800)
-    } catch {
-      window.location.href = `mailto:${links.email}`
-    }
-  }
   return (
-    <button type="button" className="email-button magnetic" data-cursor="Copy" onClick={copy}>
-      <span className="email-button__text">{links.email}</span>
-      <span className="email-button__state" aria-live="polite">
-        {copied ? 'Copied to clipboard' : 'Click to copy'}
+    <button
+      type="button"
+      className="mail magnetic"
+      data-cursor="Copy"
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(links.email)
+          setCopied(true)
+          window.setTimeout(() => setCopied(false), 1800)
+        } catch {
+          window.location.href = `mailto:${links.email}`
+        }
+      }}
+    >
+      <span className="mail__addr">{links.email}</span>
+      <span className="mail__hint mono" aria-live="polite">
+        {copied ? 'Copied' : 'Click to copy'}
       </span>
     </button>
   )
 }
 
-function ProjectChapter({ project, index }: { project: Project; index: number }) {
+function ProjectRow({ index }: { index: number }) {
+  const p = projects[index]
+  const [open, setOpen] = useState(false)
+  const bodyRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const el = bodyRef.current
+    if (!el) return
+    const from = el.getBoundingClientRect().height
+    el.style.height = open ? 'auto' : '0px'
+    const to = el.getBoundingClientRect().height
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    el.animate([{ height: `${from}px` }, { height: `${to}px` }], { duration: 650, easing: 'cubic-bezier(0.7, 0, 0.2, 1)' })
+  }, [open])
   return (
-    <section className="chapter" id={project.id} data-shape={project.shape} aria-labelledby={`${project.id}-title`}>
-      <div className="chapter__intro" data-scene="object">
-        <p className="chapter__count">
-          <span>{String(index + 1).padStart(2, '0')}</span> of {String(projects.length).padStart(2, '0')}
-        </p>
-        <h3 className="chapter__name" id={`${project.id}-title`}>
-          <Letters text={project.name} />
-        </h3>
-        <p className="chapter__kind">{project.kind}</p>
-      </div>
-
-      <div className="chapter__detail" data-scene="detail">
-        <div className="chapter__copy">
-          <p className="chapter__pitch">{project.pitch}</p>
-          <p className="chapter__body">{project.body}</p>
-          <dl className="facts">
-            {project.facts.map((f) => (
-              <div className="fact" key={f.label}>
+    <li className={`row${open ? ' is-open' : ''}`} data-preview={p.images[0]?.src}>
+      <span className="row__line" aria-hidden="true" />
+      <button type="button" className="row__head" aria-expanded={open} aria-controls={`${p.id}-notes`} onClick={() => setOpen(!open)}>
+        <span className="mono row__idx">{String(index + 1).padStart(2, '0')}</span>
+        <span className="row__name">{p.name}</span>
+        <span className="row__kind">{p.kind}</span>
+        <span className="mono row__year">{p.year}</span>
+        <span className="row__toggle" aria-hidden="true" />
+      </button>
+      <div className="row__body" id={`${p.id}-notes`} ref={bodyRef} style={{ height: 0 }}>
+        <div className="row__inner">
+          <p className="row__pitch">{p.pitch}</p>
+          <p className="row__text">{p.body}</p>
+          <dl className="row__facts">
+            {p.facts.map((f) => (
+              <div key={f.label}>
                 <dt>{f.value}</dt>
                 <dd>{f.label}</dd>
               </div>
             ))}
           </dl>
-          <ul className="stack" aria-label="Built with">
-            {project.stack.map((s) => (
-              <li key={s}>{s}</li>
-            ))}
-          </ul>
-          <div className="chapter__links">
-            {project.live && (
-              <a className="pill pill--solid magnetic" href={project.live} target="_blank" rel="noreferrer">
+          <p className="mono row__stack">{p.stack.join(' / ')}</p>
+          <div className="row__links">
+            {p.live && (
+              <a className="btn btn--fill magnetic" href={p.live} target="_blank" rel="noreferrer">
                 Open live site
               </a>
             )}
-            {project.code && (
-              <a className="pill magnetic" href={project.code} target="_blank" rel="noreferrer">
+            {p.code && (
+              <a className="btn magnetic" href={p.code} target="_blank" rel="noreferrer">
                 Read the code
               </a>
             )}
-            {project.note && <p className="chapter__note">{project.note}</p>}
+            {p.note && <p className="row__note">{p.note}</p>}
           </div>
         </div>
-
-        <div className="chapter__media">
-          {project.images.length ? (
-            project.images.map((img, i) => (
-              <a
-                key={img.src}
-                className={`shot shot--${i}`}
-                href={project.live}
-                target="_blank"
-                rel="noreferrer"
-                data-cursor="Visit"
-                tabIndex={i === 0 ? 0 : -1}
-              >
-                <img src={img.src} alt={img.alt} loading="lazy" decoding="async" width={1400} height={875} />
-              </a>
-            ))
-          ) : (
-            <div className="shot shot--alibi" aria-hidden="true">
-              <div className="alibi-card alibi-card--word">
-                <span>Your word</span>
-                <strong>Lighthouse</strong>
-              </div>
-              <div className="alibi-card alibi-card--imposter">
-                <span>You are the</span>
-                <strong>Imposter</strong>
-              </div>
-              <div className="alibi-vote">
-                <span>Vote</span>
-                <i />
-                <i />
-                <i className="is-picked" />
-                <i />
-              </div>
-            </div>
-          )}
-        </div>
       </div>
-    </section>
+    </li>
   )
 }
 
 export default function App() {
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const globeRef = useRef<HTMLCanvasElement>(null)
+  const galleryRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
-    if (!canvasRef.current) return
-    return setupMotion(canvasRef.current)
+    if (!globeRef.current || !galleryRef.current) return
+    return setupMotion(globeRef.current, galleryRef.current)
   }, [])
 
   return (
     <>
-      <div className="preloader" aria-hidden="true">
-        <div className="preloader__count">
-          <span className="preloader__num">0</span>
+      <div className="loader" aria-hidden="true">
+        <div className="loader__row mono">
+          <span>Kareem Alwan</span>
+          <span>Portfolio, 2026</span>
         </div>
-        <div className="preloader__bar">
+        <div className="loader__num">
+          <span className="loader__count">000</span>
+        </div>
+        <div className="loader__track">
           <span />
         </div>
-        <p className="preloader__name">Kareem Alwan</p>
       </div>
 
-      <canvas className="field" ref={canvasRef} aria-hidden="true" />
-      <div className="grain" aria-hidden="true" />
-      <div className="progress" aria-hidden="true">
-        <span />
-      </div>
+      <canvas className="globe" ref={globeRef} aria-hidden="true" />
+      <canvas className="gallery-gl" ref={galleryRef} aria-hidden="true" />
       <div className="cursor" aria-hidden="true">
-        <span className="cursor__dot" />
         <span className="cursor__ring">
           <span className="cursor__label" />
         </span>
       </div>
+      <div className="preview" aria-hidden="true">
+        <img alt="" />
+      </div>
 
       <header className="nav">
-        <a className="nav__mark magnetic" href="#top" aria-label="Kareem Alwan, back to top">
-          KA
+        <a href="#top" className="nav__name">
+          Kareem Alwan
         </a>
-        <nav aria-label="Sections">
+        <p className="nav__meta mono">
+          <span>Westland, MI</span>
+          <Clock />
+        </p>
+        <nav className="nav__links" aria-label="Sections">
           <a href="#work">Work</a>
-          <a href="#experience">Experience</a>
+          <a href="#about">About</a>
           <a href="#contact">Contact</a>
         </nav>
-        <p className="nav__time">
-          <LocalTime />
-        </p>
       </header>
 
       <main id="top">
-        <section className="hero" data-scene="hero" aria-label="Introduction">
-          <p className="hero__status">
-            <span className="dot" /> Open to junior frontend and React Native roles
-          </p>
-          <h1 className="hero__name">
-            <Letters text="Kareem" className="hero__line" />
-            <Letters text="Alwan" className="hero__line hero__line--indent" />
+        <section className="hero" aria-label="Introduction">
+          <div className="hero__meta mono">
+            <span>Frontend engineer</span>
+            <span>React / React Native / Three.js</span>
+            <span>42.33° N, 83.40° W</span>
+          </div>
+          <h1 className="hero__title">
+            <span className="hero__line hero__line--a">
+              <Chars text="Kareem" />
+            </span>
+            <span className="hero__line hero__line--b">
+              <Chars text="Alwan" />
+            </span>
           </h1>
           <div className="hero__foot">
             <p className="hero__lede">
-              Frontend developer. I build interfaces in React and React Native, and I bring 3D and motion to the web
-              when a page deserves it.
+              I build interfaces that move well. Production React Native by day, WebGL and motion experiments by night.
             </p>
-            <div className="hero__actions">
-              <a className="pill pill--solid magnetic" href="#work">
-                See my work
-              </a>
-              <a className="pill magnetic" href={`mailto:${links.email}`}>
-                Email me
-              </a>
-            </div>
+            <p className="hero__status mono">
+              <span className="pulse" /> Open to junior roles
+            </p>
+            <a href="#work" className="hero__cue mono">
+              Scroll
+              <span className="hero__cue-bar">
+                <i />
+              </span>
+            </a>
           </div>
-          <p className="hero__scroll" aria-hidden="true">
-            <span>Scroll</span>
-            <i />
-          </p>
         </section>
 
-        <section className="statement" data-scene="statement" aria-label="About">
-          <p className="statement__text">
-            <Words text="I care about the part of software people actually touch. By day I ship features in a live React Native app on iOS. At night I build 3D, motion heavy projects to find out how far a browser can go. This site is one of them." />
+        <section className="about" id="about" aria-label="About">
+          <p className="label mono">About</p>
+          <p className="about__text">
+            <Words text="I care about the part of software people actually touch. I ship features to a live iOS app in React Native, and on the side I build 3D, scroll and motion projects to find out how far a browser can go. Every one of them is below." />
           </p>
-        </section>
-
-        <section className="ticker" aria-label="Tools I use">
-          <div className="ticker__row">
-            <div className="ticker__track">
-              {[...toolbox, ...toolbox].map((t, i) => (
-                <span key={i}>{t}</span>
-              ))}
-            </div>
-          </div>
-          <div className="ticker__row ticker__row--reverse">
-            <div className="ticker__track">
-              {[...toolbox.slice().reverse(), ...toolbox.slice().reverse()].map((t, i) => (
-                <span key={i}>{t}</span>
-              ))}
-            </div>
-          </div>
         </section>
 
         <section className="work" id="work" aria-labelledby="work-title">
           <div className="work__head">
-            <h2 id="work-title" className="section-title">
-              <Words text="Selected work" />
+            <h2 id="work-title" className="h2">
+              <Chars text="Selected work" />
             </h2>
-            <p className="work__sub">Four projects. Each one is a different kind of hard.</p>
+            <p className="mono work__count">(04) projects, keep scrolling</p>
           </div>
-          {projects.map((p, i) => (
-            <ProjectChapter project={p} index={i} key={p.id} />
-          ))}
+          <div className="work__pin">
+            <div className="work__track">
+              {projects.map((p, i) => (
+                <article className={`card card--${i}`} key={p.id}>
+                  <a
+                    className="card__media"
+                    href={p.live ?? `#${p.id}-notes`}
+                    target={p.live ? '_blank' : undefined}
+                    rel="noreferrer"
+                    data-cursor={p.live ? 'Visit' : 'Notes'}
+                  >
+                    <img src={p.images[0].src} alt={p.images[0].alt} width={1400} height={875} loading="eager" decoding="async" />
+                  </a>
+                  <div className="card__cap">
+                    <span className="mono">{String(i + 1).padStart(2, '0')}</span>
+                    <h3>{p.name}</h3>
+                    <span className="card__kind">{p.kind}</span>
+                  </div>
+                </article>
+              ))}
+              <div className="card card--end">
+                <p className="card__end-text">
+                  Notes on each project
+                  <br />
+                  are just below.
+                </p>
+              </div>
+            </div>
+          </div>
         </section>
 
-        <section className="experience" id="experience" data-scene="experience" aria-labelledby="exp-title">
-          <h2 id="exp-title" className="section-title">
-            <Words text="Where I've been" />
-          </h2>
-          <ol className="timeline">
-            <span className="timeline__line" aria-hidden="true">
-              <span />
-            </span>
+        <section className="notes" aria-labelledby="notes-title">
+          <div className="notes__head">
+            <h2 id="notes-title" className="h2">
+              <Chars text="Project notes" />
+            </h2>
+            <p className="mono">Open a row for the details</p>
+          </div>
+          <ol className="rows">
+            {projects.map((p, i) => (
+              <ProjectRow index={i} key={p.id} />
+            ))}
+          </ol>
+        </section>
+
+        <section className="stats" aria-label="Results">
+          <div className="stat">
+            <p className="stat__num">
+              <span data-count="44" data-to="86">
+                44
+              </span>
+            </p>
+            <p className="stat__label">Mobile PageSpeed for a Shopify store, up from 44</p>
+          </div>
+          <div className="stat">
+            <p className="stat__num">
+              <span data-count="0" data-to="182">
+                182
+              </span>
+            </p>
+            <p className="stat__label">Unit tests behind Handheld Studio</p>
+          </div>
+          <div className="stat">
+            <p className="stat__num">
+              <span data-count="92" data-to="26">
+                26
+              </span>
+            </p>
+            <p className="stat__label">Draw calls per frame, down from 92 after batching</p>
+          </div>
+        </section>
+
+        <section className="exp" aria-labelledby="exp-title">
+          <div className="exp__side">
+            <h2 id="exp-title" className="h2">
+              <Chars text="Experience" />
+            </h2>
+          </div>
+          <ol className="exp__list">
             {roles.map((r) => (
-              <li className="role" key={r.org}>
-                <span className="role__node" aria-hidden="true" />
-                <p className="role__when">{r.when}</p>
-                <h3 className="role__org">{r.org}</h3>
-                <p className="role__title">{r.title}</p>
-                <ul className="role__points">
-                  {r.points.map((p) => (
-                    <li key={p}>{p}</li>
-                  ))}
-                </ul>
+              <li className="job" key={r.org}>
+                <span className="job__line" aria-hidden="true" />
+                <p className="mono job__when">{r.when}</p>
+                <div>
+                  <h3 className="job__org">{r.org}</h3>
+                  <p className="job__title">{r.title}</p>
+                  <ul className="job__points">
+                    {r.points.map((pt) => (
+                      <li key={pt}>{pt}</li>
+                    ))}
+                  </ul>
+                </div>
               </li>
             ))}
           </ol>
         </section>
 
-        <section className="result" data-scene="result" aria-labelledby="result-title">
-          <div className="result__copy">
-            <h2 id="result-title" className="section-title">
-              <Words text="A slow store, made fast" />
-            </h2>
-            <p>
-              Adonis Botanicals came to me with a slow Shopify store and broken ad tracking. I cut unused theme code,
-              fixed image and font loading, and rebuilt the Pixel events. Mobile PageSpeed went from 44 to 86.
-            </p>
-          </div>
-          <div className="gauge" role="img" aria-label="Mobile PageSpeed score improved from 44 to 86">
-            <svg viewBox="0 0 220 220">
-              <circle className="gauge__track" cx="110" cy="110" r="92" />
-              <circle className="gauge__fill" cx="110" cy="110" r="92" pathLength="100" />
-            </svg>
-            <div className="gauge__value">
-              <span className="gauge__num">44</span>
-              <small>Mobile PageSpeed</small>
-            </div>
+        <section className="tools" aria-label="Tools">
+          <div className="tools__track">
+            {[...toolbox, ...toolbox].map((t, i) => (
+              <span key={i}>{t}</span>
+            ))}
           </div>
         </section>
 
-        <section className="contact" id="contact" data-scene="contact" aria-labelledby="contact-title">
+        <section className="contact" id="contact" aria-labelledby="contact-title">
+          <p className="label mono">Contact</p>
           <h2 id="contact-title" className="contact__title">
-            <span className="contact__line">Let's build</span>
-            <span className="contact__line contact__line--right">something good</span>
+            <Chars text="Let's talk." />
           </h2>
           <p className="contact__sub">
-            Looking for a junior frontend or React Native role. Remote, Detroit, or happy to move to New York, San
-            Francisco, Chicago or Florida.
+            Looking for a junior frontend or React Native role. Remote, Detroit, or happy to move to New York, San Francisco,
+            Chicago or Florida.
           </p>
           <CopyEmail />
           <ul className="contact__links">
@@ -325,21 +338,14 @@ export default function App() {
                 GitHub
               </a>
             </li>
-            <li>
-              <a className="magnetic" href={`mailto:${links.email}`}>
-                Email
-              </a>
-            </li>
           </ul>
+          <footer className="foot mono">
+            <span>Designed and built by Kareem Alwan</span>
+            <span>React, Three.js, GSAP</span>
+            <Clock />
+          </footer>
         </section>
       </main>
-
-      <footer className="footer">
-        <p>Designed and built by Kareem Alwan with React, Three.js and GSAP.</p>
-        <p>
-          <LocalTime />
-        </p>
-      </footer>
     </>
   )
 }
