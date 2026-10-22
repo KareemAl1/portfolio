@@ -1,9 +1,7 @@
 import { createRoot } from 'react-dom/client'
-import '@fontsource-variable/funnel-display'
-import '@fontsource-variable/geist'
-import '@fontsource-variable/geist-mono'
+import '@fontsource-variable/inter-tight'
 import './index.css'
 import App from './App.tsx'
 
-// No StrictMode: the scroll scene owns one WebGL context and one Lenis instance for the page's lifetime.
+// No StrictMode: the page owns one Lenis instance and one set of scroll triggers for its lifetime.
 createRoot(document.getElementById('root')!).render(<App />)

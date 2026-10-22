@@ -37,8 +37,8 @@ export const projects: Project[] = [
     live: 'https://handheld-studio.vercel.app',
     code: 'https://github.com/KareemAl1/handheld-studio',
     images: [
-      { src: 'work/handheld.webp', alt: 'Handheld Studio configurator with a chalk handheld on a cobalt stage' },
-      { src: 'work/handheld-game.webp', alt: 'Signal Run playing on the handheld screen' },
+      { src: 'work/handheld.webp', alt: 'Handheld Studio configurator with the chalk HS-01 on a cobalt stage' },
+      { src: 'work/handheld-exploded.webp', alt: 'The HS-01 exploded into five layers' },
     ],
   },
   {
@@ -59,7 +59,7 @@ export const projects: Project[] = [
     code: 'https://github.com/KareemAl1/sona-store',
     images: [
       { src: 'work/sona.webp', alt: 'Sona homepage with Arc headphones on a plum field' },
-      { src: 'work/sona-compare.webp', alt: 'Sona comparison table for three products' },
+      { src: 'work/sona-bag.webp', alt: 'Sona bag with Arc, Dot and Room in Fig' },
     ],
   },
   {
@@ -97,8 +97,11 @@ export const projects: Project[] = [
       { value: '0', label: 'early peeks at the secret word' },
     ],
     stack: ['Node.js', 'Express', 'Socket.IO', 'GSAP', 'Web Audio', 'Playwright'],
-    note: 'Private repo. Happy to walk through the code on a call.',
-    images: [{ src: 'work/alibi.webp', alt: 'Alibi cards: one player sees the secret word, another learns they are the imposter' }],
+    code: 'https://github.com/KareemAl1/alibi',
+    images: [
+      { src: 'work/alibi.webp', alt: 'Alibi home screen with the interrogation table illustration' },
+      { src: 'work/alibi-round.webp', alt: 'An Alibi round with a revealed secret word card' },
+    ],
   },
 ]
 

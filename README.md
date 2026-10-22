@@ -1,32 +1,30 @@
-# Kareem Alwan, portfolio
+# kareemalwan.vercel.app
 
-My personal site. White paper, navy ink, and motion that answers the scroll.
+My portfolio. Dark, quiet and built around the work.
 
-- **Live:** [kareemalwan.vercel.app](https://kareemalwan.vercel.app)
-- **Stack:** React 19, TypeScript, Vite, Three.js with custom GLSL, GSAP ScrollTrigger, Lenis
+**[Live site](https://kareemalwan.vercel.app)**
 
-## The 30-second version
+## How it works
 
-- **Point globe:** the hero globe is ~4,000 navy points drawn with a custom shader so it reads on a white page. A satellite rides a tilted orbit, the globe follows the cursor, and on scroll the points scatter as the two halves of my name slide apart.
-- **Bending gallery:** project screenshots are mirrored into WebGL planes (one world unit equals one CSS pixel). While you scroll, each plane bends with your scroll speed and splits its color channels, then settles flat when you stop. The section pins and scrolls sideways on desktop.
-- **Scroll choreography:** the about text comes into focus word by word, headings rise character by character, hairlines draw themselves, numbers count up, and the whole page turns navy for the contact section.
-- **Details:** an expanding project index with a cursor-following preview, magnetic buttons, a cursor that labels what a click will do, and a tools strip that speeds up with scroll velocity.
-- **Accessible by default:** with Reduce Motion on there is no smooth scrolling, no loader and no scroll animation, and every section is readable. If WebGL is unavailable the regular images show instead.
+- **Hero wheel.** Project screenshots sit on one shared pivot far below the screen. A single CSS variable turns them along an arc as you scroll away.
+- **Projects grow to fill the screen.** Each project pins while its screenshot scales up from a card to full screen, then the details scroll in underneath.
+- **Text reads itself.** The intro brightens word by word in reading order.
+- **Smooth on purpose.** Every animation moves only `transform` and `opacity`, so the browser keeps it on the compositor. In a 60 fps test the scroll held 16.7 ms frames with no long tasks. Lenis smooths the wheel, and GSAP ScrollTrigger ties motion to scroll position.
+- **Reduced motion respected.** With Reduce Motion on there's no smooth scrolling or pinning, and every section shows in its final state.
 
-## Run locally
+Built with React 19, TypeScript, Vite, GSAP and Lenis. The font is Inter Tight.
+
+## Run it
 
 ```sh
 npm ci
 npm run dev
+npm run build
 ```
 
-`npm run build` typechecks and outputs a static site to `dist/`.
-
-## Projects featured
+## Featured projects
 
 - [Handheld Studio](https://github.com/KareemAl1/handheld-studio): 3D console configurator with a playable game
+- [Alibi](https://github.com/KareemAl1/alibi): real-time party game for friends on a voice call
 - [Sona](https://github.com/KareemAl1/sona-store): storefront with hand-written Web Animations
 - [PACE](https://github.com/KareemAl1/pace-studio): scroll-driven 3D shoe campaign
-- Alibi: real-time multiplayer party game (private repo)
-
-All code and copy are original. Fonts: Funnel Display, Geist and Geist Mono, all under the SIL Open Font License. The earlier black and gold version lives on the `gold-version` branch.
