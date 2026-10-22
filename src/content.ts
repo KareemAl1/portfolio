@@ -94,11 +94,11 @@ export const projects: Project[] = [
     body:
       'A browser party game for friends on a Discord call. Everyone joins with a link and a nickname, the site deals secret words, picks the imposter, runs turns and voting, then stages the reveal. I am building it to feel smooth enough for the App Store.',
     facts: [
-      { value: 'Link', label: 'to join, no accounts' },
-      { value: '4', label: 'phases: deal, talk, vote, reveal' },
-      { value: 'Live', label: 'multiplayer rooms' },
+      { value: '4–10', label: 'players per private room' },
+      { value: '46', label: 'engine and socket tests' },
+      { value: '0', label: 'early peeks at the secret word' },
     ],
-    stack: ['Real-time multiplayer', 'In development'],
+    stack: ['Node.js', 'Express', 'Socket.IO', 'GSAP', 'Web Audio', 'Playwright'],
     note: 'Private repo. Happy to walk through the code on a call.',
     images: [],
   },
@@ -118,15 +118,16 @@ export const roles: Role[] = [
     when: 'Apr 2026 to now',
     points: [
       'Ship features in a live React Native and Expo calorie tracking app on iOS.',
-      'Built native pieces in Swift: a share extension, HealthKit sync and Live Activities on the Dynamic Island.',
+      'Built a native iOS share extension that imports recipes from Instagram and TikTok reels, with a Swift app-group module.',
+      'Shipped Dynamic Island Live Activities for meal logging, streaks and reminders.',
       'Made Reduce Motion apply instantly across the app instead of after a restart.',
-      'Built onboarding, paywall and streak animations that every new user sees.',
+      'Found a false send-failure bug in the AI chat with Sentry session replay and shipped the fix.',
     ],
   },
   {
     org: 'Adonis Botanicals',
-    title: 'Shopify developer (freelance)',
-    when: 'Apr 2026 to now',
+    title: 'Frontend developer, Shopify (contract)',
+    when: 'Mar 2026 to now',
     points: [
       'Took mobile PageSpeed from 44 to 86 by fixing lazy loading, fonts and 2.58 MB of unused theme code.',
       'Restored broken Meta Pixel events so ad spend could be measured again.',
@@ -135,14 +136,14 @@ export const roles: Role[] = [
   {
     org: 'FES Institute',
     title: 'Frontend engineering program',
-    when: 'Training',
+    when: 'Oct 2025 to now',
     points: ['React, TypeScript, Next.js and Firebase, built through shipped projects with code review.'],
   },
   {
     org: 'Monroe Tobacco',
     title: 'Operations manager',
     when: '2023 to 2026',
-    points: ['Ran day to day operations while teaching myself to code at night.'],
+    points: ['Ran daily operations for a retail store: inventory, vendor ordering, scheduling and the team.'],
   },
 ]
 
