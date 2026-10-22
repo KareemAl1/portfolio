@@ -22,7 +22,7 @@ const vertex = /* glsl */ `
     vUv = uv;
     vec3 p = position;
     float bend = sin(uv.x * 3.14159);
-    p.z -= bend * clamp(uVelocity, -80.0, 80.0) * 1.1;
+    p.z -= bend * clamp(uVelocity, -60.0, 60.0) * 1.1;
     p.z += uHover * 18.0 * sin(uv.y * 3.14159) * sin(uv.x * 3.14159);
     gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
   }
@@ -50,7 +50,7 @@ const fragment = /* glsl */ `
     vec2 uv = vUv;
     uv = (uv - 0.5) * (1.0 - uHover * 0.06) + 0.5;
     vec2 c = cover(uv);
-    float shift = clamp(uVelocity, -60.0, 60.0) * 0.00035;
+    float shift = clamp(uVelocity, -40.0, 40.0) * 0.0003;
     float r = texture2D(uTexture, c + vec2(shift, 0.0)).r;
     vec4 g = texture2D(uTexture, c);
     float b = texture2D(uTexture, c - vec2(shift, 0.0)).b;
