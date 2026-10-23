@@ -76,6 +76,7 @@ function ProjectBlock({ p, i }: { p: Project; i: number }) {
                 View code
               </a>
             )}
+            {p.note && <span className="proj__note">{p.note}</span>}
           </div>
         </div>
         <div className="proj__side">

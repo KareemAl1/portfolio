@@ -400,6 +400,11 @@ p {
   gap: 10px;
   margin-top: 6px;
 }
+.proj__note {
+  align-self: center;
+  color: var(--mute);
+  font-size: 15px;
+}
 .proj__side {
   display: grid;
   align-content: start;

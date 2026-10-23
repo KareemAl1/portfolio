@@ -97,7 +97,7 @@ export const projects: Project[] = [
       { value: '0', label: 'early peeks at the secret word' },
     ],
     stack: ['Node.js', 'Express', 'Socket.IO', 'GSAP', 'Web Audio', 'Playwright'],
-    code: 'https://github.com/KareemAl1/alibi',
+    note: 'Code available on request.',
     images: [
       { src: 'work/alibi.webp', alt: 'Alibi home screen with the interrogation table illustration' },
       { src: 'work/alibi-round.webp', alt: 'An Alibi round with a revealed secret word card' },

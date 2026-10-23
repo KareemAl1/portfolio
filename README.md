@@ -25,6 +25,6 @@ npm run build
 ## Featured projects
 
 - [Handheld Studio](https://github.com/KareemAl1/handheld-studio): 3D console configurator with a playable game
-- [Alibi](https://github.com/KareemAl1/alibi): real-time party game for friends on a voice call
+- Alibi: real-time party game (private repo, code available on request)
 - [Sona](https://github.com/KareemAl1/sona-store): storefront with hand-written Web Animations
 - [PACE](https://github.com/KareemAl1/pace-studio): scroll-driven 3D shoe campaign
