@@ -146,7 +146,7 @@ export default function App() {
 
         <section className="statement" aria-label="About">
           <p className="statement__text">
-            <SplitWords text="For the past six months I've shipped features to CalorAI, a React Native app on the App Store. On my own time I build things like a 3D console you can take apart and a party game for friends on Discord." />
+            <SplitWords text="I've been building for the web for over a year. Since April I've shipped features to CalorAI, a React Native app on the App Store, and on my own time I build things like a 3D console you can take apart and a party game for friends on Discord." />
           </p>
           <p className="statement__tools">{toolbox.join(', ')}</p>
         </section>
