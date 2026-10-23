@@ -90,7 +90,7 @@ export const projects: Project[] = [
     kind: 'Multiplayer party game',
     pitch: 'One of you is lying. The site knows who.',
     body:
-      'A browser party game for friends on a Discord call. Everyone joins with a link and a nickname, the site deals secret words, picks the imposter, runs turns and voting, then stages the reveal. I am building it to feel smooth enough for the App Store.',
+      'A browser party game for friends. Everyone joins with a link and a nickname, the site deals secret words, picks the imposter, runs turns and voting, then stages the reveal. I am building it to feel smooth enough for the App Store.',
     facts: [
       { value: '4–10', label: 'players per private room' },
       { value: '46', label: 'engine and socket tests' },
