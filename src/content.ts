@@ -140,12 +140,6 @@ export const roles: Role[] = [
     when: 'Oct 2025 to now',
     points: ['React, TypeScript, Next.js and Firebase, built through shipped projects with code review.'],
   },
-  {
-    org: 'Monroe Tobacco',
-    title: 'Operations manager',
-    when: '2023 to 2026',
-    points: ['Ran daily operations for a retail store: inventory, vendor ordering, scheduling and the team.'],
-  },
 ]
 
 export const toolbox = [
