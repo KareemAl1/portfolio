@@ -137,7 +137,7 @@ export const roles: Role[] = [
   {
     org: 'FES Institute',
     title: 'Frontend engineering program',
-    when: 'Oct 2025 to now',
+    when: 'Oct 2025 to Jun 2026',
     points: ['React, TypeScript, Next.js and Firebase, built through shipped projects with code review.'],
   },
 ]
