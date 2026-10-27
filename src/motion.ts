@@ -4,8 +4,10 @@ import Lenis from 'lenis'
 
 gsap.registerPlugin(ScrollTrigger)
 
-// Every animation here moves only transform and opacity, so the browser can
-// keep it on the compositor while scrolling.
+// Scroll-linked animations move only transform and opacity, so the browser can
+// keep them on the compositor. One-off reveals also clear a short blur, the
+// soft "appear" that makes things feel like they come into focus.
+const appear = { y: 28, opacity: 0, filter: 'blur(10px)', duration: 0.9, ease: 'expo.out', clearProps: 'filter' }
 export function setupMotion() {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   const root = document.documentElement
@@ -48,7 +50,7 @@ export function setupMotion() {
       .timeline({ defaults: { ease: 'expo.out' } })
       .from('.wheel__card', { '--fan': 0, yPercent: 30, opacity: 0, duration: 1.6, stagger: 0.06 }, 0.1)
       .from('.hero__name-inner', { yPercent: 105, duration: 1.4 }, 0.25)
-      .from('.hero__top > *', { y: 16, opacity: 0, duration: 1, stagger: 0.08 }, 0.5)
+      .from('.hero__top > *', { ...appear, y: 16, stagger: 0.1 }, 0.5)
 
     // ── Hero: the wheel turns as you leave ─────────────────────────
     gsap.to('.wheel', {
@@ -78,10 +80,8 @@ export function setupMotion() {
     // ── Section headings ───────────────────────────────────────────
     gsap.utils.toArray<HTMLElement>('.section-head').forEach((h) => {
       gsap.from(h.children, {
+        ...appear,
         y: 40,
-        opacity: 0,
-        duration: 1.1,
-        ease: 'expo.out',
         stagger: 0.08,
         scrollTrigger: { trigger: h, start: 'top 85%' },
       })
@@ -102,11 +102,9 @@ export function setupMotion() {
         .fromTo(title, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.35 }, 0.75)
 
       const body = proj.querySelector('.proj__body')!
-      gsap.from(body.querySelectorAll('.proj__copy > *, .proj__facts > div, .proj__second'), {
-        y: 50,
-        opacity: 0,
-        duration: 1.1,
-        ease: 'expo.out',
+      gsap.from(body.querySelectorAll('.proj__copy > *, .proj__facts > div, .bezel'), {
+        ...appear,
+        y: 40,
         stagger: 0.06,
         scrollTrigger: { trigger: body, start: 'top 80%' },
       })
@@ -115,10 +113,7 @@ export function setupMotion() {
     // ── Experience rows ────────────────────────────────────────────
     gsap.utils.toArray<HTMLElement>('.job').forEach((job) => {
       gsap.from(job, {
-        y: 40,
-        opacity: 0,
-        duration: 1,
-        ease: 'expo.out',
+        ...appear,
         scrollTrigger: { trigger: job, start: 'top 88%' },
       })
     })
@@ -132,10 +127,7 @@ export function setupMotion() {
       scrollTrigger: { trigger: '.contact', start: 'top 70%' },
     })
     gsap.from('.contact__sub, .contact__actions > *', {
-      y: 30,
-      opacity: 0,
-      duration: 1,
-      ease: 'expo.out',
+      ...appear,
       stagger: 0.06,
       scrollTrigger: { trigger: '.contact', start: 'top 60%' },
     })

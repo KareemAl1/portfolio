@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { links, projects, roles, toolbox, type Project } from './content'
 import { setupMotion } from './motion'
 
@@ -19,6 +19,87 @@ function SplitWords({ text }: { text: string }) {
         </span>
       ))}
     </>
+  )
+}
+
+// Local time in Michigan plus a small line about what the day looks like.
+function moodFor(hour: number) {
+  if (hour < 6) return 'Late night, still shipping'
+  if (hour < 12) return 'Morning, coffee first'
+  if (hour < 17) return 'Afternoon, deep in code'
+  return 'Evening build, music on'
+}
+
+function useMichiganTime() {
+  const read = () => {
+    const now = new Date()
+    const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Detroit' })
+    const hour = Number(now.toLocaleString('en-US', { hour: 'numeric', hourCycle: 'h23', timeZone: 'America/Detroit' }))
+    return { time, mood: moodFor(hour) }
+  }
+  const [state, setState] = useState(read)
+  useEffect(() => {
+    const id = window.setInterval(() => setState(read()), 20_000)
+    return () => window.clearInterval(id)
+  }, [])
+  return state
+}
+
+function LiveStatus({ className = '' }: { className?: string }) {
+  const { time, mood } = useMichiganTime()
+  return (
+    <p className={`live ${className}`}>
+      <span className="live__mood">{mood}</span>
+      <span className="live__time">
+        Local time <time>{time}</time>
+      </span>
+    </p>
+  )
+}
+
+// A framed card whose picture slowly fades between shots while it is on screen.
+function Crossfade({ images }: { images: { src: string; alt: string }[] }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [index, setIndex] = useState(0)
+  useEffect(() => {
+    const el = ref.current
+    if (!el || images.length < 2) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    let timer = 0
+    const io = new IntersectionObserver(([entry]) => {
+      window.clearInterval(timer)
+      if (entry.isIntersecting) timer = window.setInterval(() => setIndex((i) => (i + 1) % images.length), 3600)
+    })
+    io.observe(el)
+    return () => {
+      io.disconnect()
+      window.clearInterval(timer)
+    }
+  }, [images.length])
+  return (
+    <div className="bezel" ref={ref}>
+      <div className="bezel__screen">
+        {images.map((img, i) => (
+          <img
+            key={img.src}
+            src={img.src}
+            alt={img.alt}
+            width={1400}
+            height={875}
+            loading="lazy"
+            decoding="async"
+            className={i === index ? 'is-on' : undefined}
+          />
+        ))}
+      </div>
+      {images.length > 1 && (
+        <div className="bezel__dots" aria-hidden="true">
+          {images.map((img, i) => (
+            <span key={img.src} className={i === index ? 'is-on' : undefined} />
+          ))}
+        </div>
+      )}
+    </div>
   )
 }
 
@@ -67,7 +148,7 @@ function ProjectBlock({ p, i }: { p: Project; i: number }) {
           <p className="proj__stack">{p.stack.join(', ')}</p>
           <div className="proj__links">
             {p.live && (
-              <a className="btn btn--blue" href={p.live} target="_blank" rel="noreferrer">
+              <a className="btn btn--accent" href={p.live} target="_blank" rel="noreferrer">
                 Visit site
               </a>
             )}
@@ -88,11 +169,7 @@ function ProjectBlock({ p, i }: { p: Project; i: number }) {
               </div>
             ))}
           </dl>
-          {p.images[1] && (
-            <div className="proj__second">
-              <img src={p.images[1].src} alt={p.images[1].alt} width={1400} height={875} loading="lazy" decoding="async" />
-            </div>
-          )}
+          {p.images[1] && <Crossfade images={[p.images[1], p.images[0]]} />}
         </div>
       </div>
     </article>
@@ -121,13 +198,16 @@ export default function App() {
         <section className="hero" aria-label="Introduction">
           <div className="hero__top">
             <p className="hero__intro">
-              Frontend engineer in Michigan. I build interfaces in React and React Native, and bring 3D to the web when it
-              earns its place.
+              Frontend developer in Michigan. I build interfaces in React and React Native that feel{' '}
+              <em className="warm">good to use</em>.
             </p>
-            <p className="hero__status">
-              <span className="dot" aria-hidden="true" />
-              Open to junior roles
-            </p>
+            <div className="hero__side">
+              <p className="hero__status">
+                <span className="dot" aria-hidden="true" />
+                Open to junior roles
+              </p>
+              <LiveStatus />
+            </div>
           </div>
 
           <div className="wheel" aria-hidden="true">
@@ -192,7 +272,7 @@ export default function App() {
             I'm looking for a junior frontend or React Native role. Remote or in Detroit, and willing to relocate.
           </p>
           <div className="contact__actions">
-            <CopyEmail className="btn btn--blue btn--lg" />
+            <CopyEmail className="btn btn--accent btn--lg" />
             <a className="btn btn--lg" href={links.linkedin} target="_blank" rel="noreferrer">
               LinkedIn
             </a>
@@ -205,6 +285,7 @@ export default function App() {
 
       <footer className="foot">
         <p>© 2026 Kareem Alwan</p>
+        <LiveStatus className="live--foot" />
         <p>Designed and built by me with React and GSAP.</p>
       </footer>
     </>
