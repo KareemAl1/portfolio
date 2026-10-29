@@ -487,13 +487,30 @@ p {
   line-height: 1.35;
 }
 .bezel {
+  position: relative;
   padding: 8px;
   border-radius: 22px;
   background: var(--bezel);
   box-shadow: 0 0 0 1px var(--line), 0 24px 50px rgba(0, 0, 0, 0.35);
 }
+.bezel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(220px circle at var(--mx, 50%) var(--my, 50%), rgba(var(--glow), 0.45), transparent 70%);
+  transition: opacity 0.5s var(--soft);
+}
+@media (hover: hover) {
+  .bezel:hover::after {
+    opacity: 1;
+  }
+}
 .bezel__screen {
   position: relative;
+  z-index: 1;
   aspect-ratio: 16 / 10;
   border-radius: 15px;
   overflow: hidden;
@@ -515,6 +532,8 @@ p {
   transform: scale(1);
 }
 .bezel__dots {
+  position: relative;
+  z-index: 1;
   display: flex;
   justify-content: center;
   gap: 6px;

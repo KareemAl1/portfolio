@@ -77,7 +77,16 @@ function Crossfade({ images }: { images: { src: string; alt: string }[] }) {
     }
   }, [images.length])
   return (
-    <div className="bezel" ref={ref}>
+    <div
+      className="bezel"
+      ref={ref}
+      onPointerMove={(e) => {
+        // A soft light follows the pointer across the frame.
+        const r = e.currentTarget.getBoundingClientRect()
+        e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`)
+        e.currentTarget.style.setProperty('--my', `${e.clientY - r.top}px`)
+      }}
+    >
       <div className="bezel__screen">
         {images.map((img, i) => (
           <img
