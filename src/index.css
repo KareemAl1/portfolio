@@ -562,6 +562,7 @@ p {
   padding: 0 var(--gutter);
 }
 .job {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
   gap: 16px 40px;
@@ -604,6 +605,39 @@ p {
   height: 6px;
   border-radius: 50%;
   background: var(--accent);
+}
+
+/* A warm rule draws in along the top of an experience row on hover, and the
+   bullet dots light up, so the row you're reading feels picked up. */
+.job::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.7s var(--soft);
+}
+.job__points li::before {
+  transition: box-shadow 0.5s var(--soft), transform 0.5s var(--soft);
+}
+.job__head h3 {
+  transition: color 0.5s var(--soft);
+}
+@media (hover: hover) {
+  .job:hover::before {
+    transform: scaleX(1);
+  }
+  .job:hover .job__points li::before {
+    box-shadow: 0 0 10px rgba(var(--glow), 0.7);
+    transform: scale(1.25);
+  }
+  .job:hover .job__head h3 {
+    color: var(--accent);
+  }
 }
 
 /* ── Contact ──────────────────────────────────────────────────────── */
