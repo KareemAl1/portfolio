@@ -126,12 +126,13 @@ export const roles: Role[] = [
     ],
   },
   {
-    org: 'Adonis Botanicals',
-    title: 'Frontend developer, Shopify (contract)',
+    org: 'Freelance',
+    title: 'Frontend developer, Shopify and web clients',
     when: 'Mar 2026 to now',
     points: [
-      'Took mobile PageSpeed from 44 to 86 by fixing lazy loading, fonts and 2.58 MB of unused theme code.',
-      'Restored broken Meta Pixel events so ad spend could be measured again.',
+      'Build, customize and maintain Shopify stores and websites for small businesses and early-stage brands.',
+      'Adonis Botanicals: took mobile PageSpeed from 44 to 86 by fixing lazy loading, fonts and 2.58 MB of unused theme code.',
+      'Adonis Botanicals: restored broken Meta Pixel events so ad spend could be measured again.',
     ],
   },
   {
