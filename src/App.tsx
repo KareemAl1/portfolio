@@ -251,7 +251,7 @@ export default function App() {
         <section className="work" id="work" aria-labelledby="work-title">
           <header className="section-head">
             <h2 id="work-title">Selected work</h2>
-            <p>Four projects, each built from scratch.</p>
+            <p>Five projects, each built from scratch.</p>
           </header>
           {projects.map((p, i) => (
             <ProjectBlock p={p} i={i} key={p.id} />

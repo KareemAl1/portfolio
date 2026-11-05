@@ -84,6 +84,27 @@ export const projects: Project[] = [
     ],
   },
   {
+    id: 'lumen',
+    name: 'Lumen',
+    year: '2026',
+    kind: 'Habit tracker in React Native',
+    pitch: 'A habit app where checking something off feels like flipping a switch.',
+    body:
+      'You hold a habit to light it. A ring fills under your thumb, the card warms to that habit\'s color and the streak rolls over like an odometer. Let go early and it springs back. Built in Expo with Reanimated running on the UI thread, haptics on device, and a web build so anyone can try it.',
+    facts: [
+      { value: '850 ms', label: 'hold to light a habit' },
+      { value: '60 fps', label: 'animations on the UI thread' },
+      { value: '1', label: 'codebase for iOS, Android and web' },
+    ],
+    stack: ['React Native', 'Expo', 'Reanimated 4', 'TypeScript', 'react-native-svg', 'Expo Haptics'],
+    live: 'https://lumen-habits.vercel.app',
+    code: 'https://github.com/KareemAl1/lumen-habits',
+    images: [
+      { src: 'work/lumen.webp', alt: 'Lumen on two phones, before and after lighting Drink water' },
+      { src: 'work/lumen-hold.webp', alt: 'Holding a habit in Lumen while its ring fills' },
+    ],
+  },
+  {
     id: 'alibi',
     name: 'Alibi',
     year: '2026',
@@ -147,6 +168,7 @@ export const toolbox = [
   'React',
   'React Native',
   'Expo',
+  'Reanimated',
   'TypeScript',
   'Next.js',
   'Three.js',
