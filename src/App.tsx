@@ -117,7 +117,7 @@ function CopyEmail({ className = '' }: { className?: string }) {
   return (
     <button
       type="button"
-      className={`copy ${className}`}
+      className={`copy ${className}${copied ? ' copy--done' : ''}`}
       onClick={async () => {
         try {
           await navigator.clipboard.writeText(links.email)
@@ -128,7 +128,14 @@ function CopyEmail({ className = '' }: { className?: string }) {
         }
       }}
     >
-      <span className="copy__text">{copied ? 'Copied to clipboard' : links.email}</span>
+      <span className={`copy__text${copied ? ' is-copied' : ''}`} key={copied ? 'copied' : 'email'}>
+        {copied && (
+          <svg className="copy__check" viewBox="0 0 16 16" aria-hidden="true">
+            <path d="M3 8.5l3.2 3L13 4.5" />
+          </svg>
+        )}
+        {copied ? 'Copied to clipboard' : links.email}
+      </span>
     </button>
   )
 }
