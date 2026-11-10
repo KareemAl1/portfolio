@@ -16,15 +16,33 @@ export type Project = {
   live?: string
   code?: string
   note?: string
-  // 'browser' and 'phone' projects can be played live inside the page.
-  frame: 'browser' | 'phone' | 'shots'
   images: { src: string; alt: string }[]
 }
 
 export const projects: Project[] = [
   {
+    id: 'handheld',
+    name: 'Handheld Studio',
+    year: '2026',
+    kind: '3D product configurator',
+    pitch: 'A game console you can customize, take apart and actually play.',
+    body:
+      'An original handheld I modeled in Blender and brought to the browser with React Three Fiber. Pick shell and button colors, switch to translucent plastic, explode it into five layers, then play Signal Run, a small game I wrote that renders onto the console screen itself.',
+    facts: [
+      { value: '92 → 26', label: 'draw calls after batching' },
+      { value: '18', label: 'color and material builds' },
+      { value: '182', label: 'unit tests passing' },
+    ],
+    stack: ['React 19', 'TypeScript', 'React Three Fiber', 'Blender', 'Vitest', 'Playwright'],
+    live: 'https://handheld-studio.vercel.app',
+    code: 'https://github.com/KareemAl1/handheld-studio',
+    images: [
+      { src: 'work/handheld.webp', alt: 'Handheld Studio configurator with the chalk HS-01 on a cobalt stage' },
+      { src: 'work/handheld-exploded.webp', alt: 'The HS-01 exploded into five layers' },
+    ],
+  },
+  {
     id: 'sona',
-    frame: 'browser',
     name: 'Sona',
     year: '2026',
     kind: 'Ecommerce storefront',
@@ -45,52 +63,7 @@ export const projects: Project[] = [
     ],
   },
   {
-    id: 'lumen',
-    frame: 'phone',
-    name: 'Lumen',
-    year: '2026',
-    kind: 'Habit tracker in React Native',
-    pitch: 'A habit app where checking something off feels like flipping a switch.',
-    body:
-      'You hold a habit to light it. A ring fills under your thumb, the card warms to that habit\'s color and the streak rolls over like an odometer. Let go early and it springs back. Built in Expo with Reanimated running on the UI thread, haptics on device, and a web build so anyone can try it.',
-    facts: [
-      { value: '850 ms', label: 'hold to light a habit' },
-      { value: '60 fps', label: 'animations on the UI thread' },
-      { value: '1', label: 'codebase for iOS, Android and web' },
-    ],
-    stack: ['React Native', 'Expo', 'Reanimated 4', 'TypeScript', 'react-native-svg', 'Expo Haptics'],
-    live: 'https://lumen-habits.vercel.app',
-    code: 'https://github.com/KareemAl1/lumen-habits',
-    images: [
-      { src: 'work/lumen-phone.webp', alt: 'Lumen home screen with a week of rings and five habits' },
-      { src: 'work/lumen-hold.webp', alt: 'Holding a habit in Lumen while its ring fills' },
-    ],
-  },
-  {
-    id: 'handheld',
-    frame: 'browser',
-    name: 'Handheld Studio',
-    year: '2026',
-    kind: '3D product configurator',
-    pitch: 'A game console you can customize, take apart and actually play.',
-    body:
-      'An original handheld I modeled in Blender and brought to the browser with React Three Fiber. Pick shell and button colors, switch to translucent plastic, explode it into five layers, then play Signal Run, a small game I wrote that runs on the console screen itself.',
-    facts: [
-      { value: '92 → 26', label: 'draw calls after batching' },
-      { value: '18', label: 'color and material builds' },
-      { value: '182', label: 'unit tests passing' },
-    ],
-    stack: ['React 19', 'TypeScript', 'React Three Fiber', 'Blender', 'Vitest', 'Playwright'],
-    live: 'https://handheld-studio.vercel.app',
-    code: 'https://github.com/KareemAl1/handheld-studio',
-    images: [
-      { src: 'work/handheld.webp', alt: 'Handheld Studio configurator with the chalk HS-01 on a cobalt stage' },
-      { src: 'work/handheld-exploded.webp', alt: 'The HS-01 exploded into five layers' },
-    ],
-  },
-  {
     id: 'pace',
-    frame: 'browser',
     name: 'PACE',
     year: '2026',
     kind: 'Scroll campaign in 3D',
@@ -111,8 +84,28 @@ export const projects: Project[] = [
     ],
   },
   {
+    id: 'lumen',
+    name: 'Lumen',
+    year: '2026',
+    kind: 'Habit tracker in React Native',
+    pitch: 'A habit app where checking something off feels like flipping a switch.',
+    body:
+      'You hold a habit to light it. A ring fills under your thumb, the card warms to that habit\'s color and the streak rolls over like an odometer. Let go early and it springs back. Built in Expo with Reanimated running on the UI thread, haptics on device, and a web build so anyone can try it.',
+    facts: [
+      { value: '850 ms', label: 'hold to light a habit' },
+      { value: '60 fps', label: 'animations on the UI thread' },
+      { value: '1', label: 'codebase for iOS, Android and web' },
+    ],
+    stack: ['React Native', 'Expo', 'Reanimated 4', 'TypeScript', 'react-native-svg', 'Expo Haptics'],
+    live: 'https://lumen-habits.vercel.app',
+    code: 'https://github.com/KareemAl1/lumen-habits',
+    images: [
+      { src: 'work/lumen.webp', alt: 'Lumen on two phones, before and after lighting Drink water' },
+      { src: 'work/lumen-hold.webp', alt: 'Holding a habit in Lumen while its ring fills' },
+    ],
+  },
+  {
     id: 'alibi',
-    frame: 'shots',
     name: 'Alibi',
     year: '2026',
     kind: 'Multiplayer party game',

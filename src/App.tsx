@@ -1,26 +1,123 @@
-import { useEffect, useState } from 'react'
-import Lenis from 'lenis'
+import { useEffect, useRef, useState } from 'react'
 import { links, projects, roles, toolbox, type Project } from './content'
-import { Name } from './Name'
-import { Stage } from './Stage'
+import { setupMotion } from './motion'
 
-function useMichiganTime() {
-  const read = () =>
-    new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Detroit' })
-  const [time, setTime] = useState(read)
-  useEffect(() => {
-    const id = window.setInterval(() => setTime(read()), 20_000)
-    return () => window.clearInterval(id)
-  }, [])
-  return time
+const WHEEL = [
+  { src: 'work/sona.webp', alt: '' },
+  { src: 'work/lumen.webp', alt: '' },
+  { src: 'work/handheld.webp', alt: '' },
+  { src: 'work/pace.webp', alt: '' },
+  { src: 'work/alibi.webp', alt: '' },
+]
+
+function SplitWords({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(' ').map((w, i) => (
+        <span key={i}>
+          <span className="sw">{w}</span>{' '}
+        </span>
+      ))}
+    </>
+  )
 }
 
-function CopyEmail() {
+// Local time in Michigan plus a small line about what the day looks like.
+function moodFor(hour: number) {
+  if (hour < 6) return 'Late night, still shipping'
+  if (hour < 12) return 'Morning, coffee first'
+  if (hour < 17) return 'Afternoon, deep in code'
+  return 'Evening build, music on'
+}
+
+function useMichiganTime() {
+  const read = () => {
+    const now = new Date()
+    const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Detroit' })
+    const hour = Number(now.toLocaleString('en-US', { hour: 'numeric', hourCycle: 'h23', timeZone: 'America/Detroit' }))
+    return { time, mood: moodFor(hour) }
+  }
+  const [state, setState] = useState(read)
+  useEffect(() => {
+    const id = window.setInterval(() => setState(read()), 20_000)
+    return () => window.clearInterval(id)
+  }, [])
+  return state
+}
+
+function LiveStatus({ className = '' }: { className?: string }) {
+  const { time, mood } = useMichiganTime()
+  return (
+    <p className={`live ${className}`}>
+      <span className="live__mood">{mood}</span>
+      <span className="live__time">
+        Local time <time>{time}</time>
+      </span>
+    </p>
+  )
+}
+
+// A framed card whose picture slowly fades between shots while it is on screen.
+function Crossfade({ images }: { images: { src: string; alt: string }[] }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [index, setIndex] = useState(0)
+  useEffect(() => {
+    const el = ref.current
+    if (!el || images.length < 2) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    let timer = 0
+    const io = new IntersectionObserver(([entry]) => {
+      window.clearInterval(timer)
+      if (entry.isIntersecting) timer = window.setInterval(() => setIndex((i) => (i + 1) % images.length), 3600)
+    })
+    io.observe(el)
+    return () => {
+      io.disconnect()
+      window.clearInterval(timer)
+    }
+  }, [images.length])
+  return (
+    <div
+      className="bezel"
+      ref={ref}
+      onPointerMove={(e) => {
+        // A soft light follows the pointer across the frame.
+        const r = e.currentTarget.getBoundingClientRect()
+        e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`)
+        e.currentTarget.style.setProperty('--my', `${e.clientY - r.top}px`)
+      }}
+    >
+      <div className="bezel__screen">
+        {images.map((img, i) => (
+          <img
+            key={img.src}
+            src={img.src}
+            alt={img.alt}
+            width={1400}
+            height={875}
+            loading="lazy"
+            decoding="async"
+            className={i === index ? 'is-on' : undefined}
+          />
+        ))}
+      </div>
+      {images.length > 1 && (
+        <div className="bezel__dots" aria-hidden="true">
+          {images.map((img, i) => (
+            <span key={img.src} className={i === index ? 'is-on' : undefined} />
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function CopyEmail({ className = '' }: { className?: string }) {
   const [copied, setCopied] = useState(false)
   return (
     <button
       type="button"
-      className={`copy${copied ? ' is-copied' : ''}`}
+      className={`copy ${className}${copied ? ' copy--done' : ''}`}
       onClick={async () => {
         try {
           await navigator.clipboard.writeText(links.email)
@@ -31,34 +128,56 @@ function CopyEmail() {
         }
       }}
     >
-      <span className="copy__text" key={copied ? 'copied' : 'email'}>
+      <span className={`copy__text${copied ? ' is-copied' : ''}`} key={copied ? 'copied' : 'email'}>
         {copied && (
           <svg className="copy__check" viewBox="0 0 16 16" aria-hidden="true">
             <path d="M3 8.5l3.2 3L13 4.5" />
           </svg>
         )}
-        {copied ? 'Copied' : links.email}
+        {copied ? 'Copied to clipboard' : links.email}
       </span>
     </button>
   )
 }
 
-// Each project gets the whole screen and its own colors. The page takes on
-// that project's palette while you're inside it.
-function World({ p }: { p: Project }) {
+function ProjectBlock({ p, i }: { p: Project; i: number }) {
   return (
-    <article className={`world world--${p.frame}`} id={p.id} data-world={p.id}>
-      <header className="world__head">
-        <h3 className="world__name">{p.name}</h3>
-        <p className="world__kind">
-          {p.kind}, {p.year}
-        </p>
-      </header>
-      <div className="world__body">
-        <div className="world__copy">
-          <p className="world__pitch">{p.pitch}</p>
-          <p className="world__text">{p.body}</p>
-          <dl className="facts">
+    <article className="proj" id={p.id} aria-labelledby={`${p.id}-name`}>
+      <div className="proj__stage">
+        <div className="proj__sticky">
+          <figure className="proj__frame">
+            <img src={p.images[0].src} alt={p.images[0].alt} width={2400} height={1500} loading={i === 0 ? 'eager' : 'lazy'} decoding="async" />
+            <figcaption className="proj__title">
+              <span className="proj__kind">{p.kind}</span>
+              <span className="proj__name" id={`${p.id}-name`}>
+                {p.name}
+              </span>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+
+      <div className="proj__body">
+        <div className="proj__copy">
+          <p className="proj__pitch">{p.pitch}</p>
+          <p className="proj__text">{p.body}</p>
+          <p className="proj__stack">{p.stack.join(', ')}</p>
+          <div className="proj__links">
+            {p.live && (
+              <a className="btn btn--accent" href={p.live} target="_blank" rel="noreferrer">
+                Visit site
+              </a>
+            )}
+            {p.code && (
+              <a className="btn" href={p.code} target="_blank" rel="noreferrer">
+                View code
+              </a>
+            )}
+            {p.note && <span className="proj__note">{p.note}</span>}
+          </div>
+        </div>
+        <div className="proj__side">
+          <dl className="proj__facts">
             {p.facts.map((f) => (
               <div key={f.label}>
                 <dt>{f.value}</dt>
@@ -66,97 +185,15 @@ function World({ p }: { p: Project }) {
               </div>
             ))}
           </dl>
-          <p className="world__stack">{p.stack.join(', ')}</p>
-          <div className="world__links">
-            {p.live && (
-              <a className="btn btn--fill" href={p.live} target="_blank" rel="noreferrer">
-                Open the site
-              </a>
-            )}
-            {p.code && (
-              <a className="btn" href={p.code} target="_blank" rel="noreferrer">
-                Read the code
-              </a>
-            )}
-            {p.note && <span className="world__note">{p.note}</span>}
-          </div>
+          {p.images[1] && <Crossfade images={[p.images[1], p.images[0]]} />}
         </div>
-        <Stage p={p} />
       </div>
     </article>
   )
 }
 
 export default function App() {
-  const time = useMichiganTime()
-
-  useEffect(() => {
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
-    const root = document.documentElement
-    let lenis: Lenis | undefined
-    let raf = 0
-
-    if (!reduced) lenis = new Lenis({ lerp: 0.11 })
-
-    const worlds = Array.from(document.querySelectorAll<HTMLElement>('[data-world]'))
-    const names = Array.from(document.querySelectorAll<HTMLElement>('.world__name'))
-    const nav = document.querySelector<HTMLElement>('.nav')
-    let lastY = -1
-
-    const update = () => {
-      const vh = window.innerHeight
-      const mid = vh / 2
-      let world = 'studio'
-      for (const w of worlds) {
-        const r = w.getBoundingClientRect()
-        if (r.top < mid && r.bottom > mid) world = w.dataset.world!
-      }
-      if (root.dataset.world !== world) root.dataset.world = world
-      nav?.classList.toggle('is-scrolled', window.scrollY > 10)
-      if (reduced) return
-      // Project names arrive heavy and narrow, then open up as they rise.
-      for (const n of names) {
-        const r = n.getBoundingClientRect()
-        if (r.bottom < -100 || r.top > vh + 100) continue
-        const t = Math.max(0, Math.min(1, (vh - r.top) / (vh * 0.75)))
-        const e = 1 - (1 - t) ** 3
-        n.style.fontVariationSettings = `'wdth' ${(50 + e * 62).toFixed(1)}, 'wght' ${(860 - e * 330).toFixed(0)}`
-      }
-    }
-
-    const loop = (now: number) => {
-      lenis?.raf(now)
-      if (window.scrollY !== lastY) {
-        lastY = window.scrollY
-        update()
-      }
-      raf = requestAnimationFrame(loop)
-    }
-    update()
-    raf = requestAnimationFrame(loop)
-    const onResize = () => {
-      lastY = -1
-    }
-    window.addEventListener('resize', onResize)
-
-    const onAnchor = (e: MouseEvent) => {
-      const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href^="#"]')
-      if (!a) return
-      const target = document.querySelector<HTMLElement>(a.getAttribute('href')!)
-      if (!target) return
-      e.preventDefault()
-      if (lenis) lenis.scrollTo(target, { offset: 0 })
-      else target.scrollIntoView()
-    }
-    document.addEventListener('click', onAnchor)
-
-    return () => {
-      cancelAnimationFrame(raf)
-      lenis?.destroy()
-      window.removeEventListener('resize', onResize)
-      document.removeEventListener('click', onAnchor)
-    }
-  }, [])
+  useEffect(() => setupMotion(), [])
 
   return (
     <>
@@ -177,52 +214,63 @@ export default function App() {
         <section className="hero" aria-label="Introduction">
           <div className="hero__top">
             <p className="hero__intro">
-              Frontend developer in Michigan. I build React and React Native interfaces that feel good in the hand.
+              Frontend developer in Michigan. I build interfaces in React and React Native that feel{' '}
+              <em className="warm">good to use</em>.
             </p>
-            <p className="hero__status">
-              <span className="hero__open">
+            <div className="hero__side">
+              <p className="hero__status">
                 <span className="dot" aria-hidden="true" />
                 Open to junior roles
-              </span>
-              <span>
-                Westland, Michigan, <time>{time}</time>
-              </span>
-            </p>
+              </p>
+              <LiveStatus />
+            </div>
           </div>
-          <Name />
-          <p className="hero__hint" aria-hidden="true">
-            <span className="hero__hint-fine">Run your cursor across the letters.</span>
-            <span className="hero__hint-touch">Drag a finger across the letters.</span>
+
+          <div className="wheel" aria-hidden="true">
+            {WHEEL.map((c, i) => (
+              <div className="wheel__card" style={{ ['--i' as string]: i - 2 }} key={c.src}>
+                <img src={c.src} alt="" width={2400} height={1500} decoding="async" />
+              </div>
+            ))}
+          </div>
+
+          <h1 className="hero__name">
+            <span className="hero__name-inner">
+              <span>Kareem</span> <span>Alwan</span>
+            </span>
+          </h1>
+        </section>
+
+        <section className="statement" aria-label="About">
+          <p className="statement__text">
+            <SplitWords text="I've been building for the web for over a year. Since April I've shipped features to CalorAI, a React Native app on the App Store, and on my own time I build things like a 3D console you can take apart, a habit app you light with your thumb and a party game for friends." />
           </p>
+          <p className="statement__tools">{toolbox.join(', ')}</p>
         </section>
 
         <section className="work" id="work" aria-labelledby="work-title">
-          <div className="work__lead">
-            <h2 id="work-title">Five projects. Four of them run right here on the page.</h2>
-            <p>Each one has its own look, so the page changes color as you move through them.</p>
-          </div>
-          {projects.map((p) => (
-            <World p={p} key={p.id} />
+          <header className="section-head">
+            <h2 id="work-title">Selected work</h2>
+            <p>Five projects, each built from scratch.</p>
+          </header>
+          {projects.map((p, i) => (
+            <ProjectBlock p={p} i={i} key={p.id} />
           ))}
         </section>
 
         <section className="exp" id="experience" aria-labelledby="exp-title">
-          <div className="exp__lead">
+          <header className="section-head">
             <h2 id="exp-title">Experience</h2>
-            <p>
-              I&rsquo;ve been building for the web for over a year. Since April I&rsquo;ve shipped features to CalorAI, a
-              React Native app on the App Store, and I take on Shopify and web work for small brands.
-            </p>
-          </div>
-          <ol className="roles">
+          </header>
+          <ol className="exp__list">
             {roles.map((r) => (
-              <li className="role" key={r.org}>
-                <div className="role__head">
+              <li className="job" key={r.org}>
+                <div className="job__head">
                   <h3>{r.org}</h3>
-                  <p>{r.title}</p>
-                  <p className="role__when">{r.when}</p>
+                  <p className="job__title">{r.title}</p>
+                  <p className="job__when">{r.when}</p>
                 </div>
-                <ul>
+                <ul className="job__points">
                   {r.points.map((pt) => (
                     <li key={pt}>{pt}</li>
                   ))}
@@ -230,31 +278,31 @@ export default function App() {
               </li>
             ))}
           </ol>
-          <p className="tools">
-            <span>I work with </span>
-            {toolbox.join(', ')}.
-          </p>
         </section>
 
         <section className="contact" id="contact" aria-labelledby="contact-title">
-          <h2 id="contact-title">Looking for a junior frontend developer? Let&rsquo;s talk.</h2>
-          <div className="contact__row">
-            <CopyEmail />
-            <a className="btn" href={links.github} target="_blank" rel="noreferrer">
-              GitHub
-            </a>
-            <a className="btn" href={links.linkedin} target="_blank" rel="noreferrer">
+          <h2 id="contact-title" className="contact__title">
+            Let's work together.
+          </h2>
+          <p className="contact__sub">
+            I'm looking for a junior frontend or React Native role. Remote or in Detroit, and willing to relocate.
+          </p>
+          <div className="contact__actions">
+            <CopyEmail className="btn btn--accent btn--lg" />
+            <a className="btn btn--lg" href={links.linkedin} target="_blank" rel="noreferrer">
               LinkedIn
+            </a>
+            <a className="btn btn--lg" href={links.github} target="_blank" rel="noreferrer">
+              GitHub
             </a>
           </div>
         </section>
       </main>
 
       <footer className="foot">
-        <span>Kareem Alwan, 2026</span>
-        <span>
-          Built with React and one variable font. <time>{time}</time> in Michigan.
-        </span>
+        <p>© 2026 Kareem Alwan</p>
+        <LiveStatus className="live--foot" />
+        <p>Designed and built by me with React and GSAP.</p>
       </footer>
     </>
   )
