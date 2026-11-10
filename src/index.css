@@ -858,3 +858,38 @@ p {
     aspect-ratio: 16 / 10;
   }
 }
+
+/* The nav shows where you are with a small dot under the current section. */
+.nav__links a:not(.nav__cta) {
+  position: relative;
+}
+.nav__links a:not(.nav__cta)::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -9px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0;
+  transform: translate(-50%, -4px) scale(0.4);
+  transition: opacity 0.35s var(--soft), transform 0.45s var(--soft);
+}
+.nav__links a.is-current:not(.nav__cta) {
+  color: var(--text);
+}
+.nav__links a.is-current:not(.nav__cta)::after {
+  opacity: 1;
+  transform: translate(-50%, 0) scale(1);
+}
+
+/* Reading one role quiets the others. */
+@media (hover: hover) {
+  .job > * {
+    transition: opacity 0.4s var(--soft);
+  }
+  .exp__list:has(.job:hover) .job:not(:hover) > * {
+    opacity: 0.45;
+  }
+}
