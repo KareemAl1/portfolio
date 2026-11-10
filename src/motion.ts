@@ -52,6 +52,20 @@ export function setupMotion() {
       .from('.hero__name-inner', { yPercent: 105, duration: 1.4 }, 0.25)
       .from('.hero__top > *', { ...appear, y: 16, stagger: 0.1 }, 0.5)
 
+    // ── Hero: the wheel leans a little toward the pointer ──────────
+    if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      const lean = gsap.quickTo('.wheel', '--lean', { duration: 1.2, ease: 'power3.out' })
+      const hero = document.querySelector<HTMLElement>('.hero')
+      const onMove = (e: PointerEvent) => lean((e.clientX / window.innerWidth - 0.5) * -6)
+      const onLeave = () => lean(0)
+      hero?.addEventListener('pointermove', onMove)
+      hero?.addEventListener('pointerleave', onLeave)
+      cleanups.push(() => {
+        hero?.removeEventListener('pointermove', onMove)
+        hero?.removeEventListener('pointerleave', onLeave)
+      })
+    }
+
     // ── Hero: the wheel turns as you leave ─────────────────────────
     gsap.to('.wheel', {
       '--spin': -14,

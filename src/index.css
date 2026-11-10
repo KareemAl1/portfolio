@@ -272,6 +272,7 @@ p {
    --spin turns them along an arc. */
 .wheel {
   --spin: 0;
+  --lean: 0;
   --card: 30vw;
   --radius: 110vw;
   --step: 17;
@@ -294,7 +295,7 @@ p {
   background: var(--bezel);
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.45), 0 0 0 1px var(--line);
   transform-origin: 50% calc(var(--radius) + 50%);
-  transform: rotate(calc((var(--i) * var(--step) * var(--fan) + var(--spin)) * 1deg));
+  transform: rotate(calc((var(--i) * var(--step) * var(--fan) + var(--spin) + var(--lean)) * 1deg));
   will-change: transform;
 }
 .wheel__card img {
