@@ -752,7 +752,8 @@ p {
     --card: 62vw;
     --radius: 150vw;
     --step: 25;
-    top: 34svh;
+    /* Sit below the intro, however tall the phone is. */
+    top: max(32svh, 230px);
   }
   .hero__name {
     font-size: 27vw;

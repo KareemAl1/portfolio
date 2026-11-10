@@ -22,41 +22,6 @@ function SplitWords({ text }: { text: string }) {
   )
 }
 
-// Local time in Michigan plus a small line about what the day looks like.
-function moodFor(hour: number) {
-  if (hour < 6) return 'Late night, still shipping'
-  if (hour < 12) return 'Morning, coffee first'
-  if (hour < 17) return 'Afternoon, deep in code'
-  return 'Evening build, music on'
-}
-
-function useMichiganTime() {
-  const read = () => {
-    const now = new Date()
-    const time = now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Detroit' })
-    const hour = Number(now.toLocaleString('en-US', { hour: 'numeric', hourCycle: 'h23', timeZone: 'America/Detroit' }))
-    return { time, mood: moodFor(hour) }
-  }
-  const [state, setState] = useState(read)
-  useEffect(() => {
-    const id = window.setInterval(() => setState(read()), 20_000)
-    return () => window.clearInterval(id)
-  }, [])
-  return state
-}
-
-function LiveStatus({ className = '' }: { className?: string }) {
-  const { time, mood } = useMichiganTime()
-  return (
-    <p className={`live ${className}`}>
-      <span className="live__mood">{mood}</span>
-      <span className="live__time">
-        Local time <time>{time}</time>
-      </span>
-    </p>
-  )
-}
-
 // A framed card whose picture slowly fades between shots while it is on screen.
 function Crossfade({ images }: { images: { src: string; alt: string }[] }) {
   const ref = useRef<HTMLDivElement>(null)
@@ -214,16 +179,9 @@ export default function App() {
         <section className="hero" aria-label="Introduction">
           <div className="hero__top">
             <p className="hero__intro">
-              Frontend developer in Detroit. I build interfaces in React and React Native that feel{' '}
+              Frontend developer. I build interfaces in React and React Native that feel{' '}
               <em className="warm">good to use</em>.
             </p>
-            <div className="hero__side">
-              <p className="hero__status">
-                <span className="dot" aria-hidden="true" />
-                Open to junior roles
-              </p>
-              <LiveStatus />
-            </div>
           </div>
 
           <div className="wheel" aria-hidden="true">
@@ -285,7 +243,7 @@ export default function App() {
             Let's work together.
           </h2>
           <p className="contact__sub">
-            I'm looking for a junior frontend or React Native role. Remote or in Detroit, and willing to relocate.
+            I'm looking for a frontend or React Native role, remote or on site.
           </p>
           <div className="contact__actions">
             <CopyEmail className="btn btn--accent btn--lg" />
@@ -301,7 +259,6 @@ export default function App() {
 
       <footer className="foot">
         <p>© 2026 Kareem Alwan</p>
-        <LiveStatus className="live--foot" />
         <p>Designed and built by me with React and GSAP.</p>
       </footer>
     </>
