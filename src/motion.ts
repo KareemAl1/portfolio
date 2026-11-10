@@ -43,6 +43,18 @@ export function setupMotion() {
       onUpdate: (self) => nav?.classList.toggle('is-scrolled', self.scroll() > 10),
     })
 
+    // The nav marks the section you're reading.
+    document.querySelectorAll<HTMLAnchorElement>('.nav__links a:not(.nav__cta)').forEach((link) => {
+      const section = document.querySelector(link.getAttribute('href') || '')
+      if (!section) return
+      ScrollTrigger.create({
+        trigger: section,
+        start: 'top 45%',
+        end: 'bottom 45%',
+        onToggle: (self) => link.classList.toggle('is-current', self.isActive),
+      })
+    })
+
     if (reduced) return
 
     // ── Load: the wheel fans out, the name rises ───────────────────
