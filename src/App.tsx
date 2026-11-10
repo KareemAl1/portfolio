@@ -214,7 +214,7 @@ export default function App() {
         <section className="hero" aria-label="Introduction">
           <div className="hero__top">
             <p className="hero__intro">
-              Frontend developer in Michigan. I build interfaces in React and React Native that feel{' '}
+              Frontend developer in Detroit. I build interfaces in React and React Native that feel{' '}
               <em className="warm">good to use</em>.
             </p>
             <div className="hero__side">
