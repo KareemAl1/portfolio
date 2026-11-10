@@ -4,7 +4,7 @@ import { setupMotion } from './motion'
 
 const WHEEL = [
   { src: 'work/sona.webp', alt: '' },
-  { src: 'work/handheld-exploded.webp', alt: '' },
+  { src: 'work/lumen.webp', alt: '' },
   { src: 'work/handheld.webp', alt: '' },
   { src: 'work/pace.webp', alt: '' },
   { src: 'work/alibi.webp', alt: '' },
@@ -243,7 +243,7 @@ export default function App() {
 
         <section className="statement" aria-label="About">
           <p className="statement__text">
-            <SplitWords text="I've been building for the web for over a year. Since April I've shipped features to CalorAI, a React Native app on the App Store, and on my own time I build things like a 3D console you can take apart and a party game for friends." />
+            <SplitWords text="I've been building for the web for over a year. Since April I've shipped features to CalorAI, a React Native app on the App Store, and on my own time I build things like a 3D console you can take apart, a habit app you light with your thumb and a party game for friends." />
           </p>
           <p className="statement__tools">{toolbox.join(', ')}</p>
         </section>
